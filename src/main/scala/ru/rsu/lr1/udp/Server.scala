@@ -1,10 +1,12 @@
-package ru.rsu.lr1.variant1
+package ru.rsu.lr1.udp
+
+import ru.rsu.lr1.udp.Server
 
 import java.io.{BufferedReader, File, IOException}
 import java.net.{DatagramPacket, DatagramSocket, InetAddress}
-import scala.io.StdIn.readLine
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
+import scala.io.StdIn.readLine
 
 object Server {
   @throws[Exception]

@@ -1,45 +1,45 @@
 package ru.rsu.lr1.variant1
 
-import java.net.{DatagramPacket, InetAddress, MulticastSocket}
-import java.util.Calendar
+import akka.actor.{Actor, ActorRef, Props}
+import akka.io.{IO, Tcp}
+import akka.util.ByteString
+
+import java.net.InetSocketAddress
 
 object Client {
-  private var address = null
-  private var buffer = null
-  private var packet = null
-  private var str = null
-  private val port = 1502;
-  private val socket = new MulticastSocket(port);
+  def props(remote: InetSocketAddress, replies: ActorRef) =
+    Props(classOf[Client], remote, replies)
+}
 
-  @throws[Exception]
-  def main(arg: Array[String]): Unit = {
-    System.out.println("Ожидание сообщения от сервера...")
-    try { // Создание объекта MulticastSocket, чтобы получать
-      // данные от группы, используя номер порта 1502
-      //var socket = new MulticastSocket(1502)
-      val address = InetAddress.getByName("233.0.0.1")
-      // Регистрация клиента в группе
-      socket.joinGroup(address)
-      while ( {
-        true
-      }) {
-        val buffer = new Array[Byte](256)
-        val packet = new DatagramPacket(buffer, buffer.length)
-        // Получение данных от сервера
-        socket.receive(packet)
-        val str = new String(packet.getData)
-        System.out.println("Получено сообщение: " + str.trim + " время получения: " + Calendar.getInstance.getTime)
+class Client(remote: InetSocketAddress, listener: ActorRef) extends Actor {
+
+  import Tcp._
+  import context.system
+
+  IO(Tcp) ! Connect(remote)
+
+  def receive = {
+    case CommandFailed(_: Connect) =>
+      listener ! "connect failed"
+      context.stop(self)
+
+    case c@Connected(remote, local) =>
+      listener ! c
+      val connection = sender()
+      connection ! Register(self)
+      context.become {
+        case data: ByteString =>
+          connection ! Write(data)
+        case CommandFailed(w: Write) =>
+          // O/S buffer was full
+          listener ! "write failed"
+        case Received(data) =>
+          listener ! data
+        case "close" =>
+          connection ! Close
+        case _: ConnectionClosed =>
+          listener ! "connection closed"
+          context.stop(self)
       }
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-    } finally try { // Удаление клиента из группы
-      socket.leaveGroup(address)
-      // Закрытие сокета
-      socket.close()
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-    }
   }
 }
