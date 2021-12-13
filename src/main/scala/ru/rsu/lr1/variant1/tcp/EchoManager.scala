@@ -5,7 +5,8 @@ import akka.io.{IO, Tcp}
 
 import java.net.InetSocketAddress
 
-class ClientTCP(handlerClass: Class[_]) extends Actor with ActorLogging {
+//EchoManager - class
+class EchoManager(handlerClass: Class[_]) extends Actor with ActorLogging {
 
   import Tcp._
   import context.system

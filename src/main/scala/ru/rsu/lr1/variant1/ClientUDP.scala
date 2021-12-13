@@ -5,7 +5,6 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.io.Tcp.{Bind, Bound, CommandFailed, Connect, Connected, Event, PeerClosed, Received, Register, ResumeReading, SuspendReading, Write}
 import akka.io.{IO, Tcp, Udp}
 import akka.util.ByteString
-import ru.rsu.lr1.variant1.tcp.SimplisticHandler
 
 import java.net.InetSocketAddress
 
@@ -35,13 +34,6 @@ class ClientUDP(local: InetSocketAddress, remote: InetSocketAddress) extends Act
       context.parent ! b
 
     case CommandFailed(_: Bind) => context.stop(self)
-
-    case c@Connected(remote, local) =>
-      val handler = context.actorOf(Props[SimplisticHandler]())
-      val connect = sender()
-      connect ! Register(handler)
-      connection = connect;
-
   }
 
   def ready(send: ActorRef): Receive = {
