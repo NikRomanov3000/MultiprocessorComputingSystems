@@ -19,6 +19,9 @@ class SimpleEchoHandler(connection: ActorRef, remote: InetSocketAddress) extends
       buffer(data)
       connection ! Write(data, Ack)
 
+      //отчаянные поптыки заставить рабоать
+      println(data.utf8String)
+
       context.become({
         case Received(data) => buffer(data)
         case Ack            => acknowledge()

@@ -10,11 +10,10 @@ object StartServerTCP extends App {
   val config = ConfigFactory.parseString("akka.loglevel = DEBUG")
   implicit val system: ActorSystem = ActorSystem("EchoServer", config)
 
-  system.actorOf(Props(classOf[EchoManager], classOf[EchoHandler]), "echo")
-  //system.actorOf(Props(classOf[EchoManager], classOf[SimpleEchoHandler]), "simple")
+  //system.actorOf(Props(classOf[EchoManager], classOf[EchoHandler]), "echo")
+  system.actorOf(Props(classOf[EchoManager], classOf[SimpleEchoHandler]), "simple")
 
   println("Press enter to exit...")
   StdIn.readLine()
   system.terminate()
-
 }
