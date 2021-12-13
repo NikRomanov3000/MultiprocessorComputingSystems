@@ -153,7 +153,4 @@ class EchoHandler(connection: ActorRef, remote: InetSocketAddress) extends Actor
       connection ! Write(data, Ack(storageOffset + i))
     }
   }
-
-  //#storage-omitted
 }
-//#echo-handler
