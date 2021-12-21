@@ -50,9 +50,9 @@ class EchoHandler(connection: ActorRef, remote: InetSocketAddress) extends Actor
     var peerClosed = false
 
     {
-      case Received(data)         => buffer(data)
-      case WritingResumed         => writeFirst()
-      case PeerClosed             => peerClosed = true
+      case Received(data) => buffer(data)
+      case WritingResumed => writeFirst()
+      case PeerClosed => peerClosed = true
       case Ack(ack) if ack < nack => acknowledge(ack)
       case Ack(ack) =>
         acknowledge(ack)

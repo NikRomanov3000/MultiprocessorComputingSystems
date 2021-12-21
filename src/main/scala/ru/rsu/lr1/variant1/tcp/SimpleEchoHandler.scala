@@ -1,14 +1,17 @@
 package ru.rsu.lr1.variant1.tcp
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.io.Tcp._
 import akka.util.ByteString
 
 import java.net.InetSocketAddress
 
+object SimpleEchoHandler {
+  def apply(connection: ActorRef, remote: InetSocketAddress) = Props(classOf[SimpleEchoHandler], connection, remote);
+}
+
+//#simple-echo-handler
 class SimpleEchoHandler(connection: ActorRef, remote: InetSocketAddress) extends Actor with ActorLogging {
-
-  import akka.io.Tcp._
-
   // sign death pact: this actor terminates when connection breaks
   context.watch(connection)
 
@@ -16,16 +19,14 @@ class SimpleEchoHandler(connection: ActorRef, remote: InetSocketAddress) extends
 
   def receive = {
     case Received(data) =>
+      println("XYU PIZDA");
       buffer(data)
       connection ! Write(data, Ack)
 
-      //отчаянные поптыки заставить рабоать
-      println(data.utf8String)
-
       context.become({
         case Received(data) => buffer(data)
-        case Ack            => acknowledge()
-        case PeerClosed     => closing = true
+        case Ack => acknowledge()
+        case PeerClosed => closing = true
       }, discardOld = false)
 
     case PeerClosed => context.stop(self)

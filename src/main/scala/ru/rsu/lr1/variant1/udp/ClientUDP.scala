@@ -1,11 +1,11 @@
-package ru.rsu.lr1.variant1
+package ru.rsu.lr1.variant1.udp
 
-import akka.actor.typed.delivery.internal.ProducerControllerImpl.Ack
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.io.Tcp.{Bind, Bound, CommandFailed, Connect, Connected, Event, PeerClosed, Received, Register, ResumeReading, SuspendReading, Write}
-import akka.io.{IO, Tcp, Udp}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+import akka.io.Tcp._
+import akka.io.{IO, Udp}
 import akka.util.ByteString
-import ru.rsu.lr1.variant1.tcp.SimpleEchoHandler
+import ru.rsu.lr1.variant1.tcp.ServerTCPApp.system
+import ru.rsu.lr1.variant1.tcp.{EchoManager, ServerTCPApp, SimpleEchoHandler}
 
 import java.net.InetSocketAddress
 
@@ -41,10 +41,13 @@ class ClientUDP(local: InetSocketAddress, remote: InetSocketAddress) extends Act
 
     case Udp.Received(data, remoteAddress) ⇒
       val ipAddress = remoteAddress.getAddress.getHostAddress
-      val port = remoteAddress.asInstanceOf[InetSocketAddress].getPort
-      log.info(s"we received ${data.utf8String} from IP Address: $ipAddress and port number: $port")\
+      val port = remoteAddress.getPort
+      log.info(s"we received ${data.utf8String} from IP Address: $ipAddress and port number: $port")
       // как созадть connection: ActorRef ?
-      Props(classOf[SimpleEchoHandler], null, new InetSocketAddress("localhost", 1300))
+      //
+      val system:ActorSystem = ActorSystem("ServerTCPApp");
+      system.actorOf(Props(classOf[SimpleEchoHandler], self, new InetSocketAddress("localhost", 1300)))
+      //SimpleEchoHandler.apply(self, new InetSocketAddress("localhost", 1300));
   }
 }
 

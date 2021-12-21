@@ -1,9 +1,6 @@
-package ru.rsu.lr1.variant1
+package ru.rsu.lr1.variant1.udp
 
 import akka.actor.{ActorRef, ActorSystem}
-import akka.io.{IO, Tcp}
-import ru.rsu.lr1.tcp.ServerTCP
-import ru.rsu.lr1.variant1.StartClientTCP.system
 
 import java.net.InetSocketAddress
 

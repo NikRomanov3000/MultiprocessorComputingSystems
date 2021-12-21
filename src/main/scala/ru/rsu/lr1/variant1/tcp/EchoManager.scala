@@ -26,6 +26,9 @@ class EchoManager(handlerClass: Class[_]) extends Actor with ActorLogging {
     case Bound(localAddress) =>
       log.info("listening on port {}", localAddress.getPort)
 
+    case Tcp.Received(data) ⇒
+      log.info(s"WE  RECEIVED  ${data.utf8String} BY FUCKING TCP");
+
     case CommandFailed(Bind(_, local, _, _, _)) =>
       log.warning(s"cannot bind to [$local]")
       context.stop(self)
