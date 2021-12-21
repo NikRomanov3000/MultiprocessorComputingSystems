@@ -19,6 +19,7 @@ class SimpleEchoHandler(connection: ActorRef, remote: InetSocketAddress) extends
 
   def receive = {
     case Received(data) =>
+      println("XYU PIZDA");
       buffer(data)
       connection ! Write(data, Ack)
 
