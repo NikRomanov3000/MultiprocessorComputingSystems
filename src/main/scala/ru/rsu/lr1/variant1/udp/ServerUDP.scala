@@ -1,4 +1,4 @@
-package ru.rsu.lr1.variant1
+package ru.rsu.lr1.variant1.udp
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, Props}
 import akka.io.{IO, Udp}
@@ -28,12 +28,6 @@ class ServerUDP(local: InetSocketAddress, remote: InetSocketAddress) extends Act
     case msg: String ⇒
       send ! Udp.Send(ByteString(listOfMessage(iterator)), remote)
       iterator = iterator + 1;
-    /*
-       case Udp.Received(data, remoteAddress) ⇒
-         val ipAddress = remoteAddress.getAddress.getHostAddress
-         val port = remoteAddress.asInstanceOf[InetSocketAddress].getPort
-         log.info(s"we received ${data.utf8String} from IP Address: $ipAddress and port number: $port")
-   */
   }
 }
 

@@ -1,4 +1,4 @@
-package ru.rsu.lr1.variant1
+package ru.rsu.lr1.variant1.udp
 
 import akka.actor.{ActorRef, ActorSystem}
 
